@@ -12,10 +12,16 @@ class THIRDPERSONCPP_API ACStaticMeshBase : public AActor
 public:	
 	ACStaticMeshBase();
 
+private:
+	UFUNCTION()
+	void UpdateParameters();
+
 protected:
 	virtual void BeginPlay() override;
 
 protected:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere) // or VisibleDefault
 	UStaticMeshComponent* MeshComp;
+
+	UMaterialInstanceDynamic* DynamicMaterial;
 };
