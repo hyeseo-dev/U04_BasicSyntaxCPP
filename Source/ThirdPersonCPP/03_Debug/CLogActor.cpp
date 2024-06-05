@@ -19,11 +19,23 @@ void ACLogActor::BeginPlay()
 	CLog::Print(GetActorLocation());
 	CLog::Print(GetActorRotation());
 
+	CLog::Log(777);
+	CLog::Log(PI);
+	CLog::Log("Hi~~~");
+	CLog::Log(GetActorLocation());
+	CLog::Log(GetActorRotation());
+	CLog::Log(this);
+	CLog::Log(__FILE__);
+	CLog::Log(__FUNCTION__, __LINE__);
+	PrintLine();
 }
 
 void ACLogActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	RunningTime += DeltaTime;
+	//RunningTime = GetWorld()->TimeSeconds;
+	CLog::Print(RunningTime, 100);
 }
 
