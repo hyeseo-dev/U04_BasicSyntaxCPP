@@ -1,5 +1,10 @@
 #include "CPlayer.h"
 
+ACPlayer::ACPlayer()
+{
+
+}
+
 void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
