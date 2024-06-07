@@ -1,13 +1,35 @@
 #include "CPlayer.h"
 #include "Global.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Camera/CameraComponent.h"
 
 ACPlayer::ACPlayer()
 {
+	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>("SpringArmComp");
+	SpringArmComp->SetupAttachment(GetCapsuleComponent());
+	SpringArmComp->TargetArmLength = 200.f;
+	SpringArmComp->SetRelativeLocation(FVector(0, 0, 60));
+	SpringArmComp->bDoCollisionTest = false;
+	SpringArmComp->bUsePawnControlRotation = true;
+	
+	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
+	CameraComp->SetupAttachment(SpringArmComp);
+
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->MaxWalkSpeed = 400.f;
+
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> meshAsset(TEXT("SkeletalMesh'/Game/Character/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (meshAsset.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(meshAsset.Object);
 	}
+
+	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
+	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
+
 }
 
 void ACPlayer::BeginPlay()

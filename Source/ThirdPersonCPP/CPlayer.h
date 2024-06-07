@@ -4,6 +4,9 @@
 #include "GameFramework/Character.h"
 #include "CPlayer.generated.h"
 
+class USpringArmComponent;
+class UCameraComponent;
+
 UCLASS()
 class THIRDPERSONCPP_API ACPlayer : public ACharacter
 {
@@ -21,4 +24,11 @@ public:
 private:
 	void OnMoveForward(float Axis);
 	void OnMoveRight(float Axis);
+
+private:
+	UPROPERTY(VisibleAnywhere)
+	USpringArmComponent* SpringArmComp;
+
+	UPROPERTY(VisibleAnywhere)
+	UCameraComponent* CameraComp;
 };
