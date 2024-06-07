@@ -3,7 +3,11 @@
 
 ACPlayer::ACPlayer()
 {
-
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> meshAsset(TEXT("SkeletalMesh'/Game/Character/Mesh/SK_Mannequin.SK_Mannequin'"));
+	if (meshAsset.Succeeded())
+	{
+		GetMesh()->SetSkeletalMesh(meshAsset.Object);
+	}
 }
 
 void ACPlayer::BeginPlay()
