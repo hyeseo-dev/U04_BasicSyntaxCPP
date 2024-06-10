@@ -4,11 +4,10 @@
 void ACBoxBase_ActorOverlap::BeginPlay()
 {
 	Super::BeginPlay();
-
-	OnActorBeginOverlap.AddDynamic(this, &ACBoxBase_ActorOverlap::BeginOverlap);
 }
 
-void ACBoxBase_ActorOverlap::BeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
+void ACBoxBase_ActorOverlap::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
+	Super::ActorBeginOverlap(OverlappedActor, OtherActor);
 	CLog::Print("OtherActor :" + OtherActor->GetActorLabel());
 }

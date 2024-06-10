@@ -13,6 +13,5 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UFUNCTION()
-	void BeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
+	void ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor) override;
 };
