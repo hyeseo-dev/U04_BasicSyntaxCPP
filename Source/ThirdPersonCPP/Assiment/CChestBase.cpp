@@ -7,8 +7,14 @@ ACChestBase::ACChestBase()
 {
 	Emissive = FLinearColor::Red;
 
+	RootComp = CreateDefaultSubobject<USceneComponent>("RootComp");
+	RootComponent = RootComp;
+
 	TopMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TopMeshComp"));
 	BottomMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BottomMeshComp"));
+
+	TopMeshComp->SetupAttachment(RootComp);
+	BottomMeshComp->SetupAttachment(RootComp);
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> topMeshAsset(TEXT("/Game/Assiment/Chest/SM_ChestTop"));
 	ConstructorHelpers::FObjectFinder<UStaticMesh> bottomMeshAsset(TEXT("/Game/Assiment/Chest/SM_ChestBottom"));
@@ -17,11 +23,7 @@ ACChestBase::ACChestBase()
 	{
 		TopMeshComp->SetStaticMesh(topMeshAsset.Object);
 		BottomMeshComp->SetStaticMesh(bottomMeshAsset.Object);
-
-		BottomMeshComp->SetupAttachment(TopMeshComp);
 	}
-
-
 }
 
 void ACChestBase::BeginPlay()

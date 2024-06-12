@@ -4,7 +4,6 @@
 #include "GameFramework/Actor.h"
 #include "CChestBase.generated.h"
 
-
 UCLASS()
 class THIRDPERSONCPP_API ACChestBase : public AActor
 {
@@ -17,6 +16,9 @@ protected:
 	virtual void BeginPlay() override;
 
 protected:
+	UPROPERTY(VisibleDefaultsOnly)
+	USceneComponent* RootComp;
+
 	UPROPERTY(VisibleDefaultsOnly)
 	UStaticMeshComponent* TopMeshComp;
 
