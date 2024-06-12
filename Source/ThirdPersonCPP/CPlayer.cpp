@@ -4,17 +4,18 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "CAnimInstance.h"
 
 ACPlayer::ACPlayer()
 {
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>("SpringArmComp");
 	SpringArmComp->SetupAttachment(GetCapsuleComponent());
-	SpringArmComp->TargetArmLength = 200.f;
 	SpringArmComp->SetRelativeLocation(FVector(0, 0, 60));
+	SpringArmComp->TargetArmLength = 200.f;
 	SpringArmComp->bDoCollisionTest = false;
 	SpringArmComp->bUsePawnControlRotation = true;
-	
+
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
 
@@ -36,20 +37,23 @@ ACPlayer::ACPlayer()
 	{
 		GetMesh()->SetAnimInstanceClass(AnimInstanceClass.Class);
 	}
-
 }
 
 void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	
-}
 
+	BodyMaterial = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
+	LogoMaterial = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(1), this);
+
+	GetMesh()->SetMaterial(0, BodyMaterial);
+	GetMesh()->SetMaterial(1, LogoMaterial);
+}
 
 void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &ACPlayer::OnMoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACPlayer::OnMoveRight);
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
@@ -83,4 +87,10 @@ void ACPlayer::OnSprint()
 void ACPlayer::OffSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 400.f;
+}
+
+void ACPlayer::SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor)
+{
+	BodyMaterial->SetVectorParameterValue("BodyColor", InBodyColor);
+	LogoMaterial->SetVectorParameterValue("BodyColor", InLogoColor);
 }

@@ -6,6 +6,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class UMaterialInstanceDynamic;
 
 UCLASS()
 class THIRDPERSONCPP_API ACPlayer : public ACharacter
@@ -28,10 +29,18 @@ private:
 	void OnSprint();
 	void OffSprint();
 
+public:
+	UFUNCTION(BlueprintCallable)
+	void SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor);
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
 
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraComp;
+
+private:
+	UMaterialInstanceDynamic* BodyMaterial;
+	UMaterialInstanceDynamic* LogoMaterial;
 };
