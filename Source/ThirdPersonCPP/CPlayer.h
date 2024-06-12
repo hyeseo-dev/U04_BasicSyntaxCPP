@@ -6,6 +6,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class ACChestBase_Box;
 
 UCLASS()
 class THIRDPERSONCPP_API ACPlayer : public ACharacter
@@ -28,10 +29,18 @@ private:
 	void OnSprint();
 	void OffSprint();
 
+	void OnOpen();
+
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Chest")
+	TSubclassOf<ACChestBase_Box> ChestBoxClasses;
+
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
 
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraComp;
+
+private:
+	ACChestBase_Box* ChestBox;
 };

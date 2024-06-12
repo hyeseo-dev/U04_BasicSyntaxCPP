@@ -1,4 +1,5 @@
 #include "CPlayer.h"
+#include "Assiment/Chest/CChestBase_Box.h"
 #include "Global.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -42,7 +43,6 @@ ACPlayer::ACPlayer()
 void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 
@@ -57,6 +57,7 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Pressed, this, &ACPlayer::OnSprint);
 	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Released, this, &ACPlayer::OffSprint);
+	PlayerInputComponent->BindAction("Open", EInputEvent::IE_Released, this, &ACPlayer::OnOpen);
 }
 
 void ACPlayer::OnMoveForward(float Axis)
@@ -83,4 +84,34 @@ void ACPlayer::OnSprint()
 void ACPlayer::OffSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 400.f;
+}
+
+void ACPlayer::OnOpen()
+{
+	FVector PlayerLocation = GetActorLocation();
+	float SearchRadius = 200.0f;
+
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACChestBase_Box::StaticClass(), FoundActors);
+
+	for (AActor* Actor : FoundActors)
+	{
+		if (Actor)
+		{
+			float Distance = FVector::Dist(PlayerLocation, Actor->GetActorLocation());
+			if (Distance <= SearchRadius)
+			{
+				ChestBox = Cast<ACChestBase_Box>(Actor);
+				if (ChestBox)
+				{
+					break;
+				}
+			}
+		}
+	}
+
+	if (ChestBox && !ChestBox->IsOpen())
+	{
+		ChestBox->OpenChest();
+	}
 }
