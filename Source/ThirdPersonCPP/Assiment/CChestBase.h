@@ -24,4 +24,7 @@ protected:
 	UStaticMeshComponent* BottomMeshComp;
 
 	UMaterialInstanceDynamic* TopDynamicMaterial;
+
+	UPROPERTY(EditInstanceOnly, Category = "MaterialParams")
+	FLinearColor Emissive;
 };

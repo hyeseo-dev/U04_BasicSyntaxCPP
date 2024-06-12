@@ -5,6 +5,8 @@
 
 ACChestBase::ACChestBase()
 {
+	Emissive = FLinearColor::Red;
+
 	TopMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TopMeshComp"));
 	BottomMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BottomMeshComp"));
 
@@ -18,6 +20,8 @@ ACChestBase::ACChestBase()
 
 		BottomMeshComp->SetupAttachment(TopMeshComp);
 	}
+
+
 }
 
 void ACChestBase::BeginPlay()
@@ -28,6 +32,7 @@ void ACChestBase::BeginPlay()
 	if (materialAsset)
 	{
 		TopDynamicMaterial = UMaterialInstanceDynamic::Create(materialAsset, nullptr);
+		TopDynamicMaterial->SetVectorParameterValue("Emissive", FLinearColor::Red);
 		TopMeshComp->SetMaterial(0, TopDynamicMaterial);
 	}
 }
