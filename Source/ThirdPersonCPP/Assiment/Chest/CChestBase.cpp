@@ -1,5 +1,4 @@
 #include "CChestBase.h"
-#include "GameFramework/PlayerInput.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Global.h"
