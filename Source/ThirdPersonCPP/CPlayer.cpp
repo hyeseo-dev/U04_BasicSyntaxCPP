@@ -39,6 +39,11 @@ ACPlayer::ACPlayer()
 	}
 }
 
+void ACPlayer::ChangeSpeed(float InMoveSpeed)
+{
+	GetCharacterMovement()->MaxWalkSpeed = InMoveSpeed;
+}
+
 void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
