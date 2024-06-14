@@ -76,7 +76,7 @@ void ACWeapon::Begin_Equip()
 
 void ACWeapon::End_Equip()
 {
-	bEquipped = false;
+	bEquipping = false;
 }
 
 void ACWeapon::Unequip()
