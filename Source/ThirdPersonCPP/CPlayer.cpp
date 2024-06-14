@@ -7,6 +7,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "CAnimInstance.h"
 #include "CWeapon.h"
+#include "Widgets/CCrossHairWidget.h"
 
 ACPlayer::ACPlayer()
 {
@@ -16,6 +17,7 @@ ACPlayer::ACPlayer()
 	SpringArmComp->TargetArmLength = 200.f;
 	SpringArmComp->bDoCollisionTest = false;
 	SpringArmComp->bUsePawnControlRotation = true;
+	SpringArmComp->SocketOffset = FVector(0, 60, 0);
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
@@ -38,6 +40,17 @@ ACPlayer::ACPlayer()
 	{
 		GetMesh()->SetAnimInstanceClass(AnimInstanceClass.Class);
 	}
+
+	ConstructorHelpers::FClassFinder<UCCrossHairWidget> CrossHairWidgetClassAsset(TEXT("/Game/Widgets/WB_CrossHair"));
+	if (CrossHairWidgetClassAsset.Succeeded())
+	{
+		CrossHairWidgetClass = CrossHairWidgetClassAsset.Class;
+	}
+}
+
+void ACPlayer::ChangeSpeed(float InMoveSpeed)
+{
+	GetCharacterMovement()->MaxWalkSpeed = InMoveSpeed;
 }
 
 void ACPlayer::BeginPlay()
@@ -53,12 +66,11 @@ void ACPlayer::BeginPlay()
 	FActorSpawnParameters SpawnParam;
 	SpawnParam.Owner = this;
 	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	Weapon = GetWorld()->SpawnActor<ACWeapon>(SpawnParam);
-}
 
-void ACPlayer::ChangeSpeed(float InMoveSpeed)
-{
-	GetCharacterMovement()->MaxWalkSpeed = InMoveSpeed;
+	Weapon = GetWorld()->SpawnActor<ACWeapon>(WeaponClass, SpawnParam);
+
+	CrossHairWidget = CreateWidget<UCCrossHairWidget, APlayerController>(GetController<APlayerController>(), CrossHairWidgetClass);
+	CrossHairWidget->AddToViewport();
 }
 
 void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -73,7 +85,10 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Pressed, this, &ACPlayer::OnSprint);
 	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Released, this, &ACPlayer::OffSprint);
 
-	PlayerInputComponent->BindAction("Rifle", EInputEvent::IE_Released, this, &ACPlayer::ToggleEquip);
+	PlayerInputComponent->BindAction("Rifle", EInputEvent::IE_Pressed, this, &ACPlayer::ToggleEquip);
+
+	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Pressed, this, &ACPlayer::OnAim);
+	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Released, this, &ACPlayer::OffAim);
 }
 
 void ACPlayer::OnMoveForward(float Axis)
@@ -113,6 +128,41 @@ void ACPlayer::ToggleEquip()
 	}
 
 	Weapon->Equip();
+
+}
+
+void ACPlayer::OnAim()
+{
+	if (Weapon == nullptr) return;
+	if (Weapon->IsEquipped() == false) return;
+	if (Weapon->IsEquipping() == true) return;
+
+	bUseControllerRotationYaw = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+
+	SpringArmComp->TargetArmLength = 100.f;
+	SpringArmComp->SocketOffset = FVector(0, 30, 10);
+
+	Begin_Zoom();
+
+	Weapon->Begin_Aiming();
+}
+
+void ACPlayer::OffAim()
+{
+	if (Weapon == nullptr) return;
+	if (Weapon->IsEquipped() == false) return;
+	if (Weapon->IsEquipping() == true) return;
+
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	SpringArmComp->TargetArmLength = 200.f;
+	SpringArmComp->SocketOffset = FVector(0, 60, 0);
+
+	End_Zoom();
+
+	Weapon->End_Aiming();
 }
 
 void ACPlayer::SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor)
@@ -120,3 +170,4 @@ void ACPlayer::SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor)
 	BodyMaterial->SetVectorParameterValue("BodyColor", InBodyColor);
 	LogoMaterial->SetVectorParameterValue("BodyColor", InLogoColor);
 }
+

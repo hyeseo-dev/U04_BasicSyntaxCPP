@@ -53,6 +53,16 @@ void ACWeapon::Tick(float DeltaTime)
 
 }
 
+void ACWeapon::Begin_Aiming()
+{
+	bAiming = true;
+}
+
+void ACWeapon::End_Aiming()
+{
+	bAiming = false;
+}
+
 void ACWeapon::Equip()
 {
 	if (bEquipping == true) return;
