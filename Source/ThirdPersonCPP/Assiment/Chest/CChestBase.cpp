@@ -34,7 +34,7 @@ void ACChestBase::BeginPlay()
 	if (materialAsset)
 	{
 		TopDynamicMaterial = UMaterialInstanceDynamic::Create(materialAsset, nullptr);
-		TopDynamicMaterial->SetVectorParameterValue("Emissive", FLinearColor::Red);
+		TopDynamicMaterial->SetVectorParameterValue("Emissive", Emissive);
 		TopMeshComp->SetMaterial(0, TopDynamicMaterial);
 	}
 }

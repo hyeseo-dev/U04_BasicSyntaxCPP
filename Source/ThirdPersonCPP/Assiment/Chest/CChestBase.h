@@ -22,11 +22,11 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly)
 	UStaticMeshComponent* TopMeshComp;
 
-	UPROPERTY(VisibleDefaultsOnly)
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
 	UStaticMeshComponent* BottomMeshComp;
 
 	UMaterialInstanceDynamic* TopDynamicMaterial;
 
-	UPROPERTY(EditInstanceOnly, Category = "MaterialParams")
+	UPROPERTY(EditAnywhere, Category = "MaterialParams")
 	FLinearColor Emissive;
 };

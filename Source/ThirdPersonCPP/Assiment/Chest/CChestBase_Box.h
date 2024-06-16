@@ -4,6 +4,8 @@
 #include "Assiment/Chest/CChestBase.h"
 #include "CChestBase_Box.generated.h"
 
+class UTextRenderComponent;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnChestOpened);
 
 UCLASS()
@@ -20,9 +22,16 @@ public:
 
 	bool IsOpen() const { return bIsOpen; }
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Chest")
+	int32 KeyIndex;
+
 protected:
-	UPROPERTY(BlueprintAssignable, Category = "Chest")
+	UPROPERTY(BlueprintAssignable, BlueprintReadWrite, Category = "Chest")
 	FOnChestOpened OnChestOpened;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	UTextRenderComponent* BoxTextRenderer;
 
 private:
 	bool bIsOpen;

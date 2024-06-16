@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Blueprint/UserWidget.h"
 #include "CPlayer.generated.h"
 
 class USpringArmComponent;
@@ -47,6 +48,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Chest")
 	TSubclassOf<ACChestBase_Box> ChestBoxClasses;
 	
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UUserWidget> WidgetClass;
+
+	UPROPERTY()
+	UUserWidget* CurrentWidget;
+
 private:
 	ACChestBase_Box* ChestBox;
 };
