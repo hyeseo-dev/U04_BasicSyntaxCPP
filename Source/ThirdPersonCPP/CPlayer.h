@@ -22,6 +22,11 @@ protected:
 public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public:
+	// 0: Red, 1: Green, 2: Blue
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Keys")
+	TArray<bool> AcquiredKeys;
+
 private:
 	void OnMoveForward(float Axis);
 	void OnMoveRight(float Axis);
@@ -29,18 +34,19 @@ private:
 	void OnSprint();
 	void OffSprint();
 
-	void OnOpen();
+	void OnBoxOpen();
+	void AcquireKey(int32 KeyIndex);
 
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "Chest")
-	TSubclassOf<ACChestBase_Box> ChestBoxClasses;
-
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
 
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraComp;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Chest")
+	TSubclassOf<ACChestBase_Box> ChestBoxClasses;
+	
 private:
 	ACChestBase_Box* ChestBox;
 };

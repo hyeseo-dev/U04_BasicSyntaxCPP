@@ -1,5 +1,6 @@
 #include "CPlayer.h"
 #include "Assiment/Chest/CChestBase_Box.h"
+#include "Assiment/Door/CDoor.h"
 #include "Global.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -38,6 +39,7 @@ ACPlayer::ACPlayer()
 		GetMesh()->SetAnimInstanceClass(AnimInstanceClass.Class);
 	}
 
+	AcquiredKeys.Init(false, 3);
 }
 
 void ACPlayer::BeginPlay()
@@ -57,7 +59,7 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Pressed, this, &ACPlayer::OnSprint);
 	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Released, this, &ACPlayer::OffSprint);
-	PlayerInputComponent->BindAction("Open", EInputEvent::IE_Released, this, &ACPlayer::OnOpen);
+	PlayerInputComponent->BindAction("Open", EInputEvent::IE_Released, this, &ACPlayer::OnBoxOpen);
 }
 
 void ACPlayer::OnMoveForward(float Axis)
@@ -86,32 +88,56 @@ void ACPlayer::OffSprint()
 	GetCharacterMovement()->MaxWalkSpeed = 400.f;
 }
 
-void ACPlayer::OnOpen()
+void ACPlayer::OnBoxOpen()
 {
-	FVector PlayerLocation = GetActorLocation();
-	float SearchRadius = 200.0f;
+    FVector Start = GetActorLocation();
+    FVector ForwardVector = GetActorForwardVector();
+    FVector End = ((ForwardVector * 200.f) + Start);
+    FHitResult HitResult;
 
-	TArray<AActor*> FoundActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACChestBase_Box::StaticClass(), FoundActors);
+    FCollisionQueryParams CollisionParams;
+    CollisionParams.AddIgnoredActor(this);
 
-	for (AActor* Actor : FoundActors)
-	{
-		if (Actor)
-		{
-			float Distance = FVector::Dist(PlayerLocation, Actor->GetActorLocation());
-			if (Distance <= SearchRadius)
-			{
-				ChestBox = Cast<ACChestBase_Box>(Actor);
-				if (ChestBox)
-				{
-					break;
-				}
-			}
-		}
-	}
+    bool bIsHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams);
 
-	if (ChestBox && !ChestBox->IsOpen())
-	{
-		ChestBox->OpenChest();
-	}
+    if (bIsHit)
+    {
+        if (ACChestBase_Box* HitChest = Cast<ACChestBase_Box>(HitResult.Actor))
+        {
+            HitChest->OpenChest();
+        }
+        else if (ACDoor* HitDoor = Cast<ACDoor>(HitResult.Actor))
+        {
+            HitDoor->OpenDoor(AcquiredKeys);
+        }
+    }
+
+    float SearchRadius = 200.0f;
+    TArray<AActor*> FoundActors;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACChestBase_Box::StaticClass(), FoundActors);
+
+    for (AActor* Actor : FoundActors)
+    {
+        if (Actor)
+        {
+            float Distance = FVector::Dist(Start, Actor->GetActorLocation());
+            if (Distance <= SearchRadius)
+            {
+                ACChestBase_Box* Chest = Cast<ACChestBase_Box>(Actor);
+                if (Chest && !Chest->IsOpen())
+                {
+                    Chest->OpenChest();
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void ACPlayer::AcquireKey(int32 KeyIndex)
+{
+    if (KeyIndex >= 0 && KeyIndex < AcquiredKeys.Num())
+    {
+        AcquiredKeys[KeyIndex] = true;
+    }
 }
