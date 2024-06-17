@@ -1,7 +1,7 @@
 #include "CChestBase.h"
+#include "Global.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "Materials/MaterialInstanceDynamic.h"
-#include "Global.h"
 
 ACChestBase::ACChestBase()
 {
@@ -26,9 +26,9 @@ ACChestBase::ACChestBase()
 	}
 }
 
-void ACChestBase::BeginPlay()
+void ACChestBase::OnConstruction(const FTransform& Transform)
 {
-	Super::BeginPlay();
+	Super::OnConstruction(Transform);
 
 	UMaterialInstanceConstant* materialAsset = Cast<UMaterialInstanceConstant>(StaticLoadObject(UMaterialInstanceConstant::StaticClass(), nullptr, TEXT("/Game/Assiment/Chest/MI_Chest")));
 	if (materialAsset)

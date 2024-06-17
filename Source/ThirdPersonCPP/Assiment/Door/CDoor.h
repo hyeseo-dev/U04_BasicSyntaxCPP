@@ -7,8 +7,6 @@
 class UBoxComponent;
 class UTextRenderComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDoorOpenedDelegate);
-
 UCLASS()
 class THIRDPERSONCPP_API ACDoor : public AActor
 {
@@ -18,7 +16,7 @@ public:
 	ACDoor();
 
 protected:
-	virtual void BeginPlay() override;
+	virtual void OnConstruction(const FTransform& Transform) override;
 
 public:
 	UFUNCTION()
@@ -35,9 +33,6 @@ public:
 	// 0: Red, 1: Green, 2: Blue
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door")
 	int32 RequiredKeyIndex;
-
-	UPROPERTY(BlueprintAssignable)
-	FDoorOpenedDelegate OnDoorOpened;
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)

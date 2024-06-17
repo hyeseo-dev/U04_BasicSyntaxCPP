@@ -6,8 +6,6 @@
 
 class UTextRenderComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnChestOpened);
-
 UCLASS()
 class THIRDPERSONCPP_API ACChestBase_Box : public ACChestBase
 {
@@ -27,9 +25,6 @@ public:
 	int32 KeyIndex;
 
 protected:
-	UPROPERTY(BlueprintAssignable, BlueprintReadWrite, Category = "Chest")
-	FOnChestOpened OnChestOpened;
-
 	UPROPERTY(VisibleDefaultsOnly)
 	UTextRenderComponent* BoxTextRenderer;
 

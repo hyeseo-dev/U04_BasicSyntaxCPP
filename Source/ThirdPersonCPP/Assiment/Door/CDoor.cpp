@@ -50,9 +50,9 @@ ACDoor::ACDoor()
     TextRenderer->SetVisibility(false);
 }
 
-void ACDoor::BeginPlay()
+void ACDoor::OnConstruction(const FTransform& Transform)
 {
-    Super::BeginPlay();
+    Super::OnConstruction(Transform);
 
     UMaterialInstanceConstant* doorMaterialAsset = Cast<UMaterialInstanceConstant>(StaticLoadObject(UMaterialInstanceConstant::StaticClass(), nullptr, TEXT("/Game/Assiment/Door/Materials/MI_Door")));
     UMaterialInstanceConstant* glassMaterialAsset = Cast<UMaterialInstanceConstant>(StaticLoadObject(UMaterialInstanceConstant::StaticClass(), nullptr, TEXT("/Game/Assiment/Door/Materials/MI_Glass")));
@@ -118,10 +118,7 @@ void ACDoor::OpenDoor(const TArray<bool>& AcquiredKeys)
         if (AcquiredKeys[RequiredKeyIndex])
         {
             bIsOpened = true;
-            // Perform door opening animation or other actions
             DoorMeshComp->AddLocalRotation(FRotator(0.0f, -90.0f, 0.0f));
-            // Broadcast the door opened event
-            OnDoorOpened.Broadcast();
         }
     }
 }

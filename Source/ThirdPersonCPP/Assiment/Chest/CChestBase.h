@@ -4,6 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "CChestBase.generated.h"
 
+
+
 UCLASS()
 class THIRDPERSONCPP_API ACChestBase : public AActor
 {
@@ -13,7 +15,7 @@ public:
 	ACChestBase();
 
 protected:
-	virtual void BeginPlay() override;
+	virtual void OnConstruction(const FTransform& Transform) override;
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly)

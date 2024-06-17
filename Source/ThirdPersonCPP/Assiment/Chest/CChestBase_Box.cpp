@@ -24,11 +24,7 @@ void ACChestBase_Box::OpenChest_Implementation()
     if (!bIsOpen)
     {
         bIsOpen = true;
-
-        FRotator NewRotation = FRotator(90.0f, 0.0f, 0.0f);
-        TopMeshComp->AddLocalRotation(NewRotation);
+        TopMeshComp->AddLocalRotation(FRotator(90.0f, 0.0f, 0.0f));
         BoxTextRenderer->SetVisibility(false);
-
-        OnChestOpened.Broadcast();
     }
 }
