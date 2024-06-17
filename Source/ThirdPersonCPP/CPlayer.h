@@ -2,10 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Blueprint/UserWidget.h"
 #include "CPlayer.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
+class ACChestBase_Box;
 
 UCLASS()
 class THIRDPERSONCPP_API ACPlayer : public ACharacter
@@ -21,6 +23,11 @@ protected:
 public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public:
+	// 0: Red, 1: Green, 2: Blue
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Keys")
+	TArray<bool> AcquiredKeys;
+
 private:
 	void OnMoveForward(float Axis);
 	void OnMoveRight(float Axis);
@@ -28,10 +35,25 @@ private:
 	void OnSprint();
 	void OffSprint();
 
+	void OnBoxOpen();
+	void AcquireKey(int32 KeyIndex);
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
 
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Chest")
+	TSubclassOf<ACChestBase_Box> ChestBoxClasses;
+	
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UUserWidget> WidgetClass;
+
+	UPROPERTY()
+	UUserWidget* CurrentWidget;
+
+private:
+	ACChestBase_Box* ChestBox;
 };
