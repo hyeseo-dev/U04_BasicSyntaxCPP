@@ -17,7 +17,7 @@ public:
 	ACChestBase_Box();
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Chest")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Chest")
 	void OpenChest();
 
 	bool IsOpen() const { return bIsOpen; }

@@ -19,7 +19,7 @@ ACChestBase_Box::ACChestBase_Box()
     BoxTextRenderer->SetVisibility(true);
 }
 
-void ACChestBase_Box::OpenChest()
+void ACChestBase_Box::OpenChest_Implementation()
 {
     if (!bIsOpen)
     {
