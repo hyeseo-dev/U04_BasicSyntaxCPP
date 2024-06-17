@@ -15,6 +15,8 @@ public:
 	ACChestBase_Box();
 
 public:
+	virtual void Tick(float DeltaTime) override;
+
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Chest")
 	void OpenChest();
 
@@ -30,4 +32,6 @@ protected:
 
 private:
 	bool bIsOpen;
+
+	FRotator InitialRotation;
 };

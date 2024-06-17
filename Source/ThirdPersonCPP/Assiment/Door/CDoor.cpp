@@ -8,6 +8,8 @@
 
 ACDoor::ACDoor()
 {
+    PrimaryActorTick.bCanEverTick = true;
+
     DoorColor = FLinearColor::Red;
 
     RootComp = CreateDefaultSubobject<USceneComponent>("RootComp");
@@ -76,6 +78,18 @@ void ACDoor::OnConstruction(const FTransform& Transform)
     }
 }
 
+void ACDoor::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+
+    if (bIsOpened)
+    {
+        FRotator TargetRotation = FRotator(0.0f, -90.0f, 0.0f);
+        FRotator NewRotation = FMath::RInterpTo(DoorMeshComp->GetRelativeRotation(), TargetRotation, DeltaTime, 3.0f);
+        DoorMeshComp->SetRelativeRotation(NewRotation);
+    }
+}
+
 void ACDoor::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
     ACPlayer* OverlappingPlayer = Cast<ACPlayer>(OtherActor);
@@ -118,7 +132,6 @@ void ACDoor::OpenDoor(const TArray<bool>& AcquiredKeys)
         if (AcquiredKeys[RequiredKeyIndex])
         {
             bIsOpened = true;
-            DoorMeshComp->AddLocalRotation(FRotator(0.0f, -90.0f, 0.0f));
         }
     }
 }
