@@ -20,9 +20,12 @@ public:
 	ACPlayer();
 
 	UFUNCTION(Exec)
-		void ChangeSpeed(float InMoveSpeed = 400.f);
+	void ChangeSpeed(float InMoveSpeed = 400.f);
 
 	FORCEINLINE ACWeapon* GetWeapon() override { return Weapon; }
+	virtual void GetAimInfo(FVector& OutAimStart, FVector& OutAimEnd, FVector& OutAimDirection) override;
+	virtual void OnTarget() override;
+	virtual void OffTarget() override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -40,30 +43,33 @@ private:
 	void OnAim();
 	void OffAim();
 
+	void OnFire();
+	void OffFire();
+
 public:
 	UFUNCTION(BlueprintCallable)
-		void SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor);
+	void SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor);
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
-		void Begin_Zoom();
+	void Begin_Zoom();
 
 	UFUNCTION(BlueprintImplementableEvent)
-		void End_Zoom();
+	void End_Zoom();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-		UCameraComponent* CameraComp;
+	UCameraComponent* CameraComp;
 
 private:
 	UPROPERTY(VisibleAnywhere)
-		USpringArmComponent* SpringArmComp;
+	USpringArmComponent* SpringArmComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "WeaponClass")
-		TSubclassOf<ACWeapon> WeaponClass;
+	TSubclassOf<ACWeapon> WeaponClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "WidgetClass")
-		TSubclassOf<UCCrossHairWidget> CrossHairWidgetClass;
+	TSubclassOf<UCCrossHairWidget> CrossHairWidgetClass;
 
 private:
 	UMaterialInstanceDynamic* BodyMaterial;

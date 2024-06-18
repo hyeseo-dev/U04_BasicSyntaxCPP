@@ -26,11 +26,17 @@ public:
 	FORCEINLINE bool IsEquipped() { return bEquipped; }
 	FORCEINLINE bool IsEquipping() { return bEquipping; }
 	FORCEINLINE bool IsAiming() { return bAiming; }
+	FORCEINLINE USkeletalMeshComponent* GetMesh() { return MeshComp; }
 
 	void Begin_Aiming();
 	void End_Aiming();
 
-public:
+	void Begin_Fire();
+	void End_Fire();
+
+	UFUNCTION()
+	void Firing();
+
 	void Equip();
 	void Begin_Equip();
 	void End_Equip();
@@ -52,6 +58,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* UnequipMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "CameraShake")
+	TSubclassOf<UCameraShake> CameraShakeClass;
+
 private:
 	UPROPERTY(VisibleDefaultsOnly)
 	USkeletalMeshComponent* MeshComp;
@@ -62,4 +71,5 @@ private:
 	bool bEquipped;
 	bool bEquipping;
 	bool bAiming;
+	bool bFiring;
 };
