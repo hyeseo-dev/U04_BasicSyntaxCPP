@@ -365,46 +365,15 @@ void ACWeapon::Reload()
 }
 
 void ACWeapon::Begin_Reload()
-//{
-//	bReloading = true;
-//
-//	CLog::Print("Begin_Reload");
-//
-//	FActorSpawnParameters SpawnParams;
-//	SpawnParams.Owner = this;
-//	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-//
-//	FVector MagLocation = MeshComp->GetSocketLocation("Mag");
-//	FRotator MagRotation = GetActorRotation();
-//
-//	ACMagazine* SpawnedMagazine = GetWorld()->SpawnActor<ACMagazine>(MagazineClass, MagLocation, MagRotation, SpawnParams);
-//	if (SpawnedMagazine)
-//	{
-//		SpawnedMagazine->MeshComp->SetSimulatePhysics(true);
-//		SpawnedMagazine->SetLifeSpan(5);
-//	}
-//
-//	AttachToComponent(
-//		OwnerCharacter->GetMesh(),
-//		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
-//		MagSocket
-//	);
-//
-//}
-
 {
 	bReloading = true;
 
-	CLog::Print("Begin_Reload");
-
-	// 기존 탄창을 플레이어 손 소켓에 부착
 	if (MagazineClass)
 	{
-		// 무기에서 탄창 위치 가져오기
+
 		FVector MagLocation = MeshComp->GetSocketLocation("Mag");
 		FRotator MagRotation = GetActorRotation();
 
-		// 새로운 탄창 스폰
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -412,14 +381,10 @@ void ACWeapon::Begin_Reload()
 		ACMagazine* SpawnedMagazine = GetWorld()->SpawnActor<ACMagazine>(MagazineClass, MagLocation, MagRotation, SpawnParams);
 		if (SpawnedMagazine)
 		{
-			// 물리 시뮬레이션 활성화
 			SpawnedMagazine->MeshComp->SetSimulatePhysics(true);
-
-			// 탄창을 일정 시간 후 제거
 			SpawnedMagazine->SetLifeSpan(5);
 		}
 
-		// TODO : 탄창을 손에 부착
 		Begin_Equip();
 	}
 }
