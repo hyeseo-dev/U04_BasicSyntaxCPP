@@ -20,6 +20,8 @@ ACBullet::ACBullet()
 	if (MaterialAsset.Succeeded())
 	{
 		MeshComp->SetMaterial(0, MaterialAsset.Object);
+		MeshComp->CastShadow = false;
+		SetActorEnableCollision(false);
 	}
 
 	MeshComp->SetRelativeScale3D(FVector(1.f, 0.025f, 0.025f));
