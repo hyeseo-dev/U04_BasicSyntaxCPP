@@ -12,7 +12,7 @@ class THIRDPERSONCPP_API ACMagazine : public AActor
 public:	
 	ACMagazine();
 
-private:
+public:
 	UPROPERTY(VisibleDefaultsOnly)
 	UStaticMeshComponent* MeshComp;
 

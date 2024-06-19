@@ -7,16 +7,14 @@ ACMagazine::ACMagazine()
 {
 
     MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
-    //RootComponent = MeshComp;
     SetRootComponent(MeshComp);
 
-    ConstructorHelpers::FObjectFinder<UStaticMesh> meshAsset(TEXT("/Game/Weapons/Meshes/AR4/SM_AR4_Mag_Empty"));
-
-    if (meshAsset.Succeeded())
+    ConstructorHelpers::FObjectFinder<UStaticMesh> MagMeshAsset(TEXT("/Game/Weapons/Meshes/AR4/SM_AR4_Mag"));
+    if (MagMeshAsset.Succeeded())
     {
-        MeshComp->SetStaticMesh(meshAsset.Object);
+        MeshComp->SetStaticMesh(MagMeshAsset.Object);
     }
 
-    MeshComp->SetSimulatePhysics(false);
+    MeshComp->SetSimulatePhysics(true);
 }
 
