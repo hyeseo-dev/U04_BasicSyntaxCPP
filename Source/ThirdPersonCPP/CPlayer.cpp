@@ -10,6 +10,7 @@
 #include "CWeapon.h"
 #include "Widgets/CCrossHairWidget.h"
 #include "Widgets/CWeaponWidget.h"
+#include "Components/TextBlock.h"
 
 ACPlayer::ACPlayer()
 {
@@ -106,6 +107,8 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Released, this, &ACPlayer::OffFire);
 
 	PlayerInputComponent->BindAction("AutoFire", EInputEvent::IE_Released, this, &ACPlayer::OnAutoFire);
+
+	PlayerInputComponent->BindAction("Reload", EInputEvent::IE_Released, this, &ACPlayer::OnReload);
 }
 
 void ACPlayer::OnMoveForward(float Axis)
@@ -198,6 +201,16 @@ void ACPlayer::OnFire()
 void ACPlayer::OffFire()
 {
 	Weapon->End_Fire();
+
+	if (WeaponWidget != nullptr && Weapon != nullptr)
+	{
+		UTextBlock* AmmoTextBlock = Cast<UTextBlock>(WeaponWidget->GetWidgetFromName(TEXT("CurrentBullet")));
+		if (AmmoTextBlock != nullptr)
+		{
+			FString AmmoString = FString::Printf(TEXT("%d"), Weapon->CurrentBullet);
+			AmmoTextBlock->SetText(FText::FromString(AmmoString));
+		}
+	}
 }
 
 void ACPlayer::OnAutoFire()
@@ -206,6 +219,12 @@ void ACPlayer::OnAutoFire()
 	Weapon->ToggleAutoFire();
 
 	Weapon->IsAutoFire() ? WeaponWidget->OnAutoFire() : WeaponWidget->OffAutoFire();
+}
+
+void ACPlayer::OnReload()
+{
+	Weapon->Reload();
+
 }
 
 void ACPlayer::SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor)

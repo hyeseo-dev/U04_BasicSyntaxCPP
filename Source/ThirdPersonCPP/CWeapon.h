@@ -11,6 +11,7 @@ class ACBullet;
 class UParticleSystem;
 class USoundCue;
 class UMaterialInstanceConstant;
+class ACMagazine;
 
 UCLASS()
 class THIRDPERSONCPP_API ACWeapon : public AActor
@@ -53,6 +54,14 @@ public:
 	void Begin_Unequip();
 	void End_Unequip();
 
+	void Reload();
+	void Begin_Reload();
+	void End_Reload();
+
+public:
+	UPROPERTY(BlueprintReadWrite)
+	int32 CurrentBullet;
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "BulletClass")
 	TSubclassOf<ACBullet> BulletClass;
@@ -69,11 +78,17 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Socket")
 	FName HandSocket;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Socket")
+	FName MagSocket;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* EquipMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* UnequipMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+	UAnimMontage* ReloadMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "CameraShake")
 	TSubclassOf<UCameraShake> CameraShakeClass;
@@ -97,6 +112,9 @@ private:
 	UPROPERTY(VisibleDefaultsOnly)
 	USkeletalMeshComponent* MeshComp;
 
+	UPROPERTY(EditDefaultsOnly, Category = "MagazineClass")
+	TSubclassOf<ACMagazine> MagazineClass;
+
 private:
 	ACharacter* OwnerCharacter;
 
@@ -105,8 +123,13 @@ private:
 	bool bAiming;
 	bool bFiring;
 	bool bAutoFire;
+	bool bReloading;
+
+	int32 MaxBullet;
 
 	float CurrentPitch;
 
 	FTimerHandle AutoTimerHandle;
+
+	ACMagazine* Magazine;
 };

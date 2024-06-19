@@ -9,6 +9,7 @@
 #include "CPlayer.h"
 #include "CBullet.h"
 #include "CWeaponInterface.h"
+#include "CMagazine.h"
 
 static TAutoConsoleVariable<bool> CVarDebugLine(TEXT("Tore.DrawDebugLine"), false, TEXT("Enable Draw Aim Line"), ECVF_Cheat);
 
@@ -19,8 +20,13 @@ ACWeapon::ACWeapon()
 	FireInterval = 0.1f;
 	PitchSpeed = 0.25f;
 
+	CurrentBullet = 30;
+	MaxBullet = 30;
+
 	HolsterSocket = "Holster_AR4";
 	HandSocket = "Hand_AR4";
+	MagSocket = "Mag";
+
 
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>("MeshComp");
 	RootComponent = MeshComp;
@@ -43,6 +49,14 @@ ACWeapon::ACWeapon()
 		UnequipMontage = UnequipMontageAsset.Object;
 	}
 
+
+	ConstructorHelpers::FObjectFinder<UAnimMontage> ReloadMontageAsset(TEXT("/Game/Character/Animations/AR4/Reload_Montage"));
+	if (ReloadMontageAsset.Succeeded())
+	{
+		ReloadMontage = ReloadMontageAsset.Object;
+	}
+
+
 	ConstructorHelpers::FClassFinder<UCameraShake> CameraShakeClassAsset(TEXT("/Game/BP_FireShake"));
 	if (CameraShakeClassAsset.Succeeded())
 	{
@@ -54,6 +68,13 @@ ACWeapon::ACWeapon()
 	if (BulletClassAsset.Succeeded())
 	{
 		BulletClass = BulletClassAsset.Class;
+	}
+
+	ConstructorHelpers::FClassFinder<ACMagazine> MagazineClassAsset(TEXT("/Game/BP_CMagazine"));
+
+	if (MagazineClassAsset.Succeeded())
+	{
+		MagazineClass = MagazineClassAsset.Class;
 	}
 
 	ConstructorHelpers::FObjectFinder<UParticleSystem> MuzzleParticleAsset(TEXT("/Game/Particles_Rifle/Particles/VFX_Muzzleflash"));
@@ -105,6 +126,28 @@ void ACWeapon::BeginPlay()
 			HolsterSocket
 		);
 	}
+
+	FActorSpawnParameters SpawnParam;
+	SpawnParam.Owner = this;
+	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	// MagazineActor »ý¼º
+	if (MagazineClass)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		Magazine = GetWorld()->SpawnActor<ACMagazine>(MagazineClass, FTransform::Identity, SpawnParams);
+		if (Magazine)
+		{
+			if (!MagSocket.IsNone())
+			{
+				Magazine->AttachToComponent(MeshComp, FAttachmentTransformRules::SnapToTargetIncludingScale, MagSocket);
+			}
+		}
+	}
+
 }
 
 void ACWeapon::Tick(float DeltaTime)
@@ -264,6 +307,12 @@ void ACWeapon::Firing()
 		}
 	}
 
+	CurrentBullet--;
+
+	if (CurrentBullet < 0)
+	{
+		CurrentBullet = 30;
+	}
 }
 
 void ACWeapon::Equip()
@@ -318,3 +367,24 @@ void ACWeapon::End_Unequip()
 	bEquipping = false;
 }
 
+void ACWeapon::Reload()
+{
+	if (bAiming == true) return;
+	if (bEquipped == false) return;
+	if (bEquipping == true) return;
+	if (bAiming == true) return;
+	if (bFiring == true) return;
+	if (bReloading == true) return;
+
+	OwnerCharacter->PlayAnimMontage(ReloadMontage);
+}
+
+void ACWeapon::Begin_Reload()
+{
+	bReloading = true;
+}
+
+void ACWeapon::End_Reload()
+{
+	bReloading = false;
+}

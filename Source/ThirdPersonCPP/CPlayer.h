@@ -49,6 +49,8 @@ private:
 
 	void OnAutoFire();
 
+	void OnReload();
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor);

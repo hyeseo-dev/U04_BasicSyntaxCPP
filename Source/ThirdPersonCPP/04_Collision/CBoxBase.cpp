@@ -18,7 +18,7 @@ ACBoxBase::ACBoxBase()
 	TextRenderComp->SetRelativeRotation(FRotator(0, 180, 0));
 	TextRenderComp->HorizontalAlignment = EHorizTextAligment::EHTA_Center;
 	TextRenderComp->TextRenderColor = FColor::Black;
-	TextRenderComp->SetText(GetName());
+	//TextRenderComp->SetText(GetName());
 }
 
 void ACBoxBase::BeginPlay()
