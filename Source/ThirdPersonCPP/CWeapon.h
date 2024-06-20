@@ -60,6 +60,7 @@ public:
 	void End_Reload();
 	void HideMagazine();
 	void UnHideMagazine();
+	void DetachMagazine();
 
 public:
 	UPROPERTY(BlueprintReadWrite)
@@ -135,4 +136,5 @@ private:
 	FTimerHandle AutoTimerHandle;
 
 	ACMagazine* Magazine;
+	ACMagazine* SpawnedHandMagazine;
 };

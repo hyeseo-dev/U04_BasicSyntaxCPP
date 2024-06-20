@@ -360,11 +360,10 @@ void ACWeapon::End_Unequip()
 void ACWeapon::Reload()
 {
 	if (bReloading == true) return;
-
 	if (bEquipped == false) return;
 	if (bEquipping == true) return;
-	//if (bAiming == true) return;
-	//if (bFiring == true) return;
+
+	bReloading = true;
 
 	if (CurrentBullet < 0 || CurrentBullet < 30)
 	{
@@ -383,15 +382,11 @@ void ACWeapon::Begin_Reload()
 
 	if (MagazineClass)
 	{
-
-		FVector MagLocation = MeshComp->GetSocketLocation("Mag");
-		FRotator MagRotation = GetActorRotation();
-
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		ACMagazine* SpawnedMagazine = GetWorld()->SpawnActor<ACMagazine>(MagazineClass, MagLocation, MagRotation, SpawnParams);
+		ACMagazine* SpawnedMagazine = GetWorld()->SpawnActor<ACMagazine>(MagazineClass, SpawnParams);
 		if (SpawnedMagazine)
 		{
 			
@@ -400,8 +395,6 @@ void ACWeapon::Begin_Reload()
 		}
 		
 		GetWorld()->GetTimerManager().SetTimer(AutoTimerHandle, this, &ACWeapon::UnHideMagazine, 1.5f, false);
-		
-		Begin_Equip();
 	}
 }
 
@@ -426,4 +419,11 @@ void ACWeapon::UnHideMagazine()
 		FName MagBoneName = "b_gun_mag";
 		MeshComp->UnHideBoneByName(MagBoneName);
 	}
+}
+
+
+void ACWeapon::DetachMagazine()
+{
+	SpawnedHandMagazine->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+
 }
