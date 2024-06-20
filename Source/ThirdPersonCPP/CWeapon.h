@@ -35,6 +35,7 @@ public:
 
 	FORCEINLINE bool IsFiring() { return bFiring; }
 	FORCEINLINE bool IsAutoFire() { return bAutoFire; }
+	FORCEINLINE bool IsReloading() { return bReloading; }
 	void ToggleAutoFire();
 
 	void Begin_Aiming();
@@ -57,6 +58,8 @@ public:
 	void Reload();
 	void Begin_Reload();
 	void End_Reload();
+	void HideMagazine();
+	void UnHideMagazine();
 
 public:
 	UPROPERTY(BlueprintReadWrite)

@@ -50,6 +50,7 @@ private:
 	void OnAutoFire();
 
 	void OnReload();
+	void OnUpdateReload();
 
 public:
 	UFUNCTION(BlueprintCallable)

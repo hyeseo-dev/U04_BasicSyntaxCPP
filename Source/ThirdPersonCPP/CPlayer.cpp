@@ -224,7 +224,16 @@ void ACPlayer::OnAutoFire()
 void ACPlayer::OnReload()
 {
 	Weapon->Reload();
-
+	
+	if (WeaponWidget != nullptr && Weapon != nullptr)
+	{
+		UTextBlock* AmmoTextBlock = Cast<UTextBlock>(WeaponWidget->GetWidgetFromName(TEXT("CurrentBullet")));
+		if (AmmoTextBlock != nullptr)
+		{
+			FString AmmoString = FString::Printf(TEXT("%d"), Weapon->CurrentBullet);
+			AmmoTextBlock->SetText(FText::FromString(AmmoString));
+		}
+	}
 }
 
 void ACPlayer::SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor)

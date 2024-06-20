@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "Particles/ParticleSystem.h"
 #include "Sound/SoundCue.h"
+#include "TimerManager.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "CPlayer.h"
 #include "CBullet.h"
@@ -190,6 +191,7 @@ void ACWeapon::Begin_Fire()
 	if (bEquipping == true) return;
 	if (bAiming == false) return;
 	if (bFiring == true) return;
+	if (bReloading == true) return;
 
 	bFiring = true;
 	CurrentPitch = 0.f;
@@ -215,6 +217,7 @@ void ACWeapon::End_Fire()
 
 void ACWeapon::Firing()
 {
+
 	ACPlayer* Player = Cast<ACPlayer>(OwnerCharacter);
 	if (Player)
 	{
@@ -296,7 +299,7 @@ void ACWeapon::Firing()
 
 	if (CurrentBullet < 0)
 	{
-		CurrentBullet = 30;
+		Reload();
 	}
 }
 
@@ -304,6 +307,7 @@ void ACWeapon::Equip()
 {
 	if (bEquipping == true) return;
 	if (bEquipped == true) return;
+	if (bReloading == true) return;
 
 	bEquipping = true;
 
@@ -330,6 +334,7 @@ void ACWeapon::Unequip()
 {
 	if (bEquipping == true) return;
 	if (bEquipped == false) return;
+	if (bReloading == true) return;
 
 	bEquipping = true;
 
@@ -354,12 +359,18 @@ void ACWeapon::End_Unequip()
 
 void ACWeapon::Reload()
 {
-	if (bAiming == true) return;
+	if (bReloading == true) return;
+
 	if (bEquipped == false) return;
 	if (bEquipping == true) return;
-	if (bAiming == true) return;
-	if (bFiring == true) return;
-	if (bReloading == true) return;
+	//if (bAiming == true) return;
+	//if (bFiring == true) return;
+
+	if (CurrentBullet < 0 || CurrentBullet < 30)
+	{
+		CurrentBullet = 30;
+	}
+
 
 	OwnerCharacter->PlayAnimMontage(ReloadMontage);
 }
@@ -367,6 +378,8 @@ void ACWeapon::Reload()
 void ACWeapon::Begin_Reload()
 {
 	bReloading = true;
+
+	HideMagazine();
 
 	if (MagazineClass)
 	{
@@ -381,10 +394,13 @@ void ACWeapon::Begin_Reload()
 		ACMagazine* SpawnedMagazine = GetWorld()->SpawnActor<ACMagazine>(MagazineClass, MagLocation, MagRotation, SpawnParams);
 		if (SpawnedMagazine)
 		{
+			
 			SpawnedMagazine->MeshComp->SetSimulatePhysics(true);
 			SpawnedMagazine->SetLifeSpan(5);
 		}
-
+		
+		GetWorld()->GetTimerManager().SetTimer(AutoTimerHandle, this, &ACWeapon::UnHideMagazine, 1.5f, false);
+		
 		Begin_Equip();
 	}
 }
@@ -392,4 +408,22 @@ void ACWeapon::Begin_Reload()
 void ACWeapon::End_Reload()
 {
 	bReloading = false;
+}
+
+void ACWeapon::HideMagazine()
+{
+	if (MeshComp)
+	{
+		FName MagBoneName = "b_gun_mag";
+		MeshComp->HideBoneByName(MagBoneName, EPhysBodyOp::PBO_None);
+	}
+}
+
+void ACWeapon::UnHideMagazine()
+{
+	if (MeshComp)
+	{
+		FName MagBoneName = "b_gun_mag";
+		MeshComp->UnHideBoneByName(MagBoneName);
+	}
 }
