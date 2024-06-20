@@ -1,5 +1,4 @@
 #include "CMagazine.h"
-#include "Materials/MaterialInstanceConstant.h"
 #include "Components/StaticMeshComponent.h"
 
 
@@ -14,7 +13,5 @@ ACMagazine::ACMagazine()
     {
         MeshComp->SetStaticMesh(MagMeshAsset.Object);
     }
-
-    MeshComp->SetSimulatePhysics(true);
 }
 

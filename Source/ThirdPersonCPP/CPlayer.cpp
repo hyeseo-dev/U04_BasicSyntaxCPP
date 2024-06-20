@@ -86,6 +86,21 @@ void ACPlayer::BeginPlay()
 	WeaponWidget->AddToViewport();
 }
 
+void ACPlayer::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (Weapon->IsAutoFire())
+	{
+		UpdateTimer += DeltaTime;
+		if (UpdateTimer >= UpdateInterval)
+		{
+			UpdateWeaponBullet();
+			UpdateTimer = 0.f;
+		}
+	}
+}
+
 void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -196,6 +211,8 @@ void ACPlayer::OffAim()
 void ACPlayer::OnFire()
 {
 	Weapon->Begin_Fire();
+
+	UpdateWeaponBullet();
 }
 
 void ACPlayer::OffFire()
@@ -223,17 +240,11 @@ void ACPlayer::OnAutoFire()
 
 void ACPlayer::OnReload()
 {
+	CLog::Print("OnReload");
+
 	Weapon->Reload();
 	
-	if (WeaponWidget != nullptr && Weapon != nullptr)
-	{
-		UTextBlock* AmmoTextBlock = Cast<UTextBlock>(WeaponWidget->GetWidgetFromName(TEXT("CurrentBullet")));
-		if (AmmoTextBlock != nullptr)
-		{
-			FString AmmoString = FString::Printf(TEXT("%d"), Weapon->CurrentBullet);
-			AmmoTextBlock->SetText(FText::FromString(AmmoString));
-		}
-	}
+	UpdateWeaponBullet();
 }
 
 void ACPlayer::SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor)
@@ -268,3 +279,15 @@ void ACPlayer::OffTarget()
 	CrossHairWidget->OffTarget();
 }
 
+void ACPlayer::UpdateWeaponBullet()
+{
+	if (WeaponWidget != nullptr && Weapon != nullptr)
+	{
+		UTextBlock* AmmoTextBlock = Cast<UTextBlock>(WeaponWidget->GetWidgetFromName(TEXT("CurrentBullet")));
+		if (AmmoTextBlock != nullptr)
+		{
+			FString AmmoString = FString::Printf(TEXT("%d"), Weapon->CurrentBullet);
+			AmmoTextBlock->SetText(FText::FromString(AmmoString));
+		}
+	}
+}

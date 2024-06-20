@@ -22,11 +22,12 @@ ACWeapon::ACWeapon()
 	PitchSpeed = 0.25f;
 
 	CurrentBullet = 30;
-	MaxBullet = 30;
 
 	HolsterSocket = "Holster_AR4";
 	HandSocket = "Hand_AR4";
 	MagSocket = "Hand_Mag";
+
+	MagBoneName = "b_gun_mag";
 
 
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>("MeshComp");
@@ -106,6 +107,13 @@ ACWeapon::ACWeapon()
 		FireSound = FireSoundAsset.Object;
 	}
 
+	ConstructorHelpers::FObjectFinder<USoundCue> SwapMagazineSoundAsset(TEXT("/Engine/VREditor/Sounds/VR_ungrab_Cue"));
+
+	if (SwapMagazineSoundAsset.Succeeded())
+	{
+		SwapMagazineSound = SwapMagazineSoundAsset.Object;
+	}
+
 	ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant> DecalMaterialAsset(TEXT("/Game/Materials/MI_Decal"));
 	if (MeshAsset.Succeeded())
 	{
@@ -131,6 +139,20 @@ void ACWeapon::BeginPlay()
 	FActorSpawnParameters SpawnParam;
 	SpawnParam.Owner = this;
 	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	Magazine = GetWorld()->SpawnActor<ACMagazine>(MagazineClass, SpawnParam);
+
+	if (MagazineClass && OwnerCharacter)
+	{
+		Magazine->AttachToComponent(
+			OwnerCharacter->GetMesh(),
+			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+			MagSocket
+		);
+
+		Magazine->MeshComp->SetSimulatePhysics(false);
+		Magazine->MeshComp->SetVisibility(false);
+	}
 
 }
 
@@ -218,6 +240,8 @@ void ACWeapon::End_Fire()
 void ACWeapon::Firing()
 {
 
+	if (bReloading == true) return;
+
 	ACPlayer* Player = Cast<ACPlayer>(OwnerCharacter);
 	if (Player)
 	{
@@ -297,7 +321,7 @@ void ACWeapon::Firing()
 
 	CurrentBullet--;
 
-	if (CurrentBullet < 0)
+	if (CurrentBullet == 0)
 	{
 		Reload();
 	}
@@ -365,11 +389,10 @@ void ACWeapon::Reload()
 
 	bReloading = true;
 
-	if (CurrentBullet < 0 || CurrentBullet < 30)
+	if (CurrentBullet  == 0 || CurrentBullet < 30)
 	{
 		CurrentBullet = 30;
 	}
-
 
 	OwnerCharacter->PlayAnimMontage(ReloadMontage);
 }
@@ -377,6 +400,11 @@ void ACWeapon::Reload()
 void ACWeapon::Begin_Reload()
 {
 	bReloading = true;
+
+	if (SwapMagazineSound)
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), SwapMagazineSound);
+	}
 
 	HideMagazine();
 
@@ -386,12 +414,14 @@ void ACWeapon::Begin_Reload()
 		SpawnParams.Owner = this;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		ACMagazine* SpawnedMagazine = GetWorld()->SpawnActor<ACMagazine>(MagazineClass, SpawnParams);
+		FVector MagLocation = MeshComp->GetSocketLocation(MagSocket);
+		FRotator MagRotation = MeshComp->GetSocketRotation(MagSocket);
+
+		ACMagazine* SpawnedMagazine = GetWorld()->SpawnActor<ACMagazine>(MagazineClass, MagLocation, MagRotation, SpawnParams);
 		if (SpawnedMagazine)
 		{
-			
 			SpawnedMagazine->MeshComp->SetSimulatePhysics(true);
-			SpawnedMagazine->SetLifeSpan(5);
+			SpawnedMagazine->SetLifeSpan(1.5);
 		}
 		
 		GetWorld()->GetTimerManager().SetTimer(AutoTimerHandle, this, &ACWeapon::UnHideMagazine, 1.5f, false);
@@ -401,29 +431,27 @@ void ACWeapon::Begin_Reload()
 void ACWeapon::End_Reload()
 {
 	bReloading = false;
+	Magazine->MeshComp->SetVisibility(false);
 }
 
 void ACWeapon::HideMagazine()
 {
-	if (MeshComp)
-	{
-		FName MagBoneName = "b_gun_mag";
-		MeshComp->HideBoneByName(MagBoneName, EPhysBodyOp::PBO_None);
-	}
+	MeshComp->HideBoneByName(MagBoneName, EPhysBodyOp::PBO_None);
 }
 
 void ACWeapon::UnHideMagazine()
 {
-	if (MeshComp)
-	{
-		FName MagBoneName = "b_gun_mag";
-		MeshComp->UnHideBoneByName(MagBoneName);
-	}
+	MeshComp->UnHideBoneByName(MagBoneName);
 }
 
-
-void ACWeapon::DetachMagazine()
+void ACWeapon::Begin_SwapMagazine()
 {
-	SpawnedHandMagazine->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	bSwapMagazine = true;
+	Magazine->MeshComp->SetVisibility(true);
+}
 
+void ACWeapon::End_SwapMagazine()
+{
+	bSwapMagazine = false;
+	Magazine->MeshComp->SetVisibility(false);
 }

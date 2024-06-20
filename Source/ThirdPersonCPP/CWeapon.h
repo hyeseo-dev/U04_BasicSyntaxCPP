@@ -35,7 +35,7 @@ public:
 
 	FORCEINLINE bool IsFiring() { return bFiring; }
 	FORCEINLINE bool IsAutoFire() { return bAutoFire; }
-	FORCEINLINE bool IsReloading() { return bReloading; }
+
 	void ToggleAutoFire();
 
 	void Begin_Aiming();
@@ -58,9 +58,12 @@ public:
 	void Reload();
 	void Begin_Reload();
 	void End_Reload();
+
 	void HideMagazine();
 	void UnHideMagazine();
-	void DetachMagazine();
+
+	void Begin_SwapMagazine();
+	void End_SwapMagazine();
 
 public:
 	UPROPERTY(BlueprintReadWrite)
@@ -110,6 +113,9 @@ private:
 	USoundCue* FireSound;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	USoundCue* SwapMagazineSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	UMaterialInstanceConstant* DecalMaterial;
 
 private:
@@ -121,6 +127,11 @@ private:
 
 private:
 	ACharacter* OwnerCharacter;
+	ACMagazine* Magazine;
+
+	FTimerHandle AutoTimerHandle;
+
+	FName MagBoneName;
 
 	bool bEquipped;
 	bool bEquipping;
@@ -128,13 +139,8 @@ private:
 	bool bFiring;
 	bool bAutoFire;
 	bool bReloading;
-
-	int32 MaxBullet;
+	bool bSwapMagazine;
 
 	float CurrentPitch;
-
-	FTimerHandle AutoTimerHandle;
-
-	ACMagazine* Magazine;
-	ACMagazine* SpawnedHandMagazine;
+	
 };

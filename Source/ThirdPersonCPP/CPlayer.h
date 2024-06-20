@@ -30,6 +30,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
@@ -50,7 +51,8 @@ private:
 	void OnAutoFire();
 
 	void OnReload();
-	void OnUpdateReload();
+
+	void UpdateWeaponBullet();
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -88,4 +90,7 @@ private:
 
 	UCCrossHairWidget* CrossHairWidget;
 	UCWeaponWidget* WeaponWidget;
+
+	float UpdateInterval = 0.1f;
+	float UpdateTimer = 0.f;
 };

@@ -15,7 +15,4 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OffAutoFire();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void UpdateBullet();
 };
